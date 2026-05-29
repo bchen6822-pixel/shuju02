@@ -195,8 +195,7 @@ let autoRefreshTimer;
 let poolList = [];
 let autoCheckOn = false;
 
-// 【这里是你的专属后端根地址，已经帮你写死】
-const BASE_API = "https://shujucaijihouduan.onrender.com";
+// 已删除BASE_API旧域名
 
 // 打开/关闭所有弹窗
 function showModalAdmin() { hideAllModal(); document.getElementById('modalAdmin').classList.add('show'); }
@@ -223,7 +222,7 @@ async function adminLogin() {
   const user = document.getElementById('admin_user').value;
   const pwd = document.getElementById('admin_pwd').value;
   try {
-    const r = await fetch(BASE_API + '/api/admin/login', {
+    const r = await fetch('/api/admin/login',{
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user, pwd })
     });
@@ -255,7 +254,7 @@ async function updateAdminUserPwd() {
   const newPwd = document.getElementById('new_admin_pwd').value.trim();
   if(!newUser && !newPwd) { alert('请输入账号或密码'); return; }
   try {
-    const res = await fetch(BASE_API + '/api/admin/set-user-pwd', {
+    const res = await fetch('/api/admin/set-user-pwd', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newUser, newPwd })
     });
@@ -275,7 +274,7 @@ async function editUserExpire() {
   const days = document.getElementById('editDays').value.trim();
   if(!user || !days || isNaN(days) || days<0) { alert('请正确填写'); return; }
   try {
-    const res = await fetch(BASE_API + '/api/admin/set-expire', {
+    const res = await fetch( '/api/admin/set-expire', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username:user, days:Number(days) })
     });
@@ -290,11 +289,11 @@ async function editUserExpire() {
   } catch(e) { alert('网络错误'); }
 }
 
-// 新增：重置换绑次数
+// 重置换绑次数
 async function resetDeviceTimes(username){
   if(!confirm('确定重置该用户换绑次数为1次？')) return;
   try{
-    const res = await fetch(BASE_API + '/api/admin/reset-device-times',{
+    const res = await fetch( '/api/admin/reset-device-times',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({username})
@@ -309,11 +308,11 @@ async function resetDeviceTimes(username){
   }catch(e){alert('网络错误');}
 }
 
-// 新增：强制下线
+// 强制下线
 async function forceLogout(username){
   if(!confirm('确定强制该用户下线？')) return;
   try{
-    const res = await fetch(BASE_API + '/api/admin/force-logout',{
+    const res = await fetch('/api/admin/force-logout',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({username})
@@ -333,7 +332,7 @@ async function addSingleUser() {
   const days = Number(document.getElementById('singleExpireDays').value)||0;
   if(!user||!pwd) { alert('请填写账号密码'); return; }
   try {
-    const r = await fetch(BASE_API + '/api/admin/batch', {
+    const r = await fetch('/api/admin/batch', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lines: user+' '+pwd, days })
     });
@@ -350,7 +349,7 @@ async function batchAdd() {
   const days = Number(document.getElementById('expireDays').value)||0;
   if(!lines) { alert('请输入内容'); return; }
   try {
-    const res = await fetch(BASE_API + '/api/admin/batch', {
+    const res = await fetch('/api/admin/batch', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lines, days })
     });
@@ -374,7 +373,7 @@ function copyUser(username, password){
 // 列表
 async function loadList() {
   try {
-    const r = await fetch(BASE_API + '/api/admin/list');
+    const r = await fetch('/api/admin/list');
     all = await r.json();
     renderList();
   } catch(e) {}
@@ -432,7 +431,7 @@ function startAutoRefresh() {
 }
 
 async function toggle(user, enabled) {
-  await fetch(BASE_API + '/api/admin/toggle', {
+  await fetch( '/api/admin/toggle', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username:user, enabled })
   });
@@ -441,7 +440,7 @@ async function toggle(user, enabled) {
 
 async function del(user) {
   if(!confirm('确定删除？')) return;
-  await fetch(BASE_API + '/api/admin/delete', {
+  await fetch( '/api/admin/delete', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username:user })
   });
@@ -449,10 +448,10 @@ async function del(user) {
 }
 
 
-// ====================== 接口池管理JS函数 新增开始 ======================
+// ====================== 接口池管理JS ======================
 async function loadPoolList(){
   try{
-    let res = await fetch(BASE_API+'/api/admin/pool-list');
+    let res = await fetch('/api/admin/pool-list');
     poolList = await res.json();
     renderPoolList();
   }catch(e){}
@@ -482,7 +481,7 @@ async function savePoolItem(){
   let remark = document.getElementById('poolRemark').value.trim();
   if(!apiUrl){alert('请填写接口地址');return;}
   try{
-    await fetch(BASE_API+'/api/admin/pool-save',{
+    await fetch('/api/admin/pool-save',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({id:id?Number(id):null,apiUrl,remark})
@@ -495,7 +494,7 @@ async function savePoolItem(){
 async function delPoolItem(id){
   if(!confirm('确定删除该节点？'))return;
   try{
-    await fetch(BASE_API+'/api/admin/pool-del',{
+    await fetch('/api/admin/pool-del',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({id})
@@ -506,7 +505,7 @@ async function delPoolItem(id){
 
 async function testSinglePool(apiUrl){
   try{
-    let res = await fetch(BASE_API+'/api/admin/pool-test-one',{
+    let res = await fetch('/api/admin/pool-test-one',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({apiUrl})
@@ -522,7 +521,7 @@ async function testSinglePool(apiUrl){
 async function testAllPool(){
   if(!confirm('确定批量检测所有节点？'))return;
   try{
-    await fetch(BASE_API+'/api/admin/pool-test-all',{method:'POST'});
+    await fetch('/api/admin/pool-test-all',{method:'POST'});
     alert('批量检测完成');
     loadPoolList();
   }catch(e){alert('批量检测失败');}
@@ -531,7 +530,7 @@ async function testAllPool(){
 async function switchAutoCheck(){
   autoCheckOn = !autoCheckOn;
   try{
-    await fetch(BASE_API+'/api/admin/set-auto-check',{
+    await fetch('/api/admin/set-auto-check',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({open:autoCheckOn})
@@ -593,8 +592,6 @@ function renderPoolList(){
   html += '</table>';
   document.getElementById('poolListWrap').innerHTML = html;
 }
-// ====================== 接口池管理JS函数 新增结束 ======================
-
 </script>
 </body>
 </html>
